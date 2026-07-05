@@ -1,25 +1,42 @@
-# RiverBot
+# RiverBot 🐟
 
-Telegram-бот, который присылает уровень воды, расход (CFS) и температуру
-для American River at Fair Oaks и Sacramento River at Freeport (данные USGS,
-без ключа API). Поддерживает команду `/now` и ежедневную рассылку по расписанию.
-Если температура опускается ниже порога — добавляет пометку про миграцию лосося.
+A Telegram bot that reports real-time water level, flow (CFS), and temperature
+for California rivers, using free USGS data (no API key required). Built for
+fishing the American and Sacramento Rivers, with an eye on salmon migration.
 
-## 1. Создать Telegram-бота
+## Features
 
-1. В Telegram напишите **@BotFather** → `/newbot`, задайте имя.
-2. Скопируйте токен вида `123456789:AAAA...` — это `BOT_TOKEN`.
-3. Напишите новому боту любое сообщение (`/start`).
-4. Откройте в браузере:
-   `https://api.telegram.org/bot<ВАШ_ТОКЕН>/getUpdates`
-   и найдите `"chat":{"id": ...}` — это ваш `CHAT_ID`.
+- `/now` — current readings for all default sites (set in `.env`)
+- `/river` — pick a river and reach with inline buttons, then:
+  - see current level / flow / temperature
+  - **📊 Compare with past years** — same calendar day, 1/3/5 years back
+  - **📉 Year-over-year trend (chart)** — flow over a ±15-day window around
+    today, one line per year, so you can actually see a trend instead of a
+    single data point
+  - **📈 7-day chart** — flow and temperature over the last week
+- Daily scheduled report sent automatically at a configured time
+- 🐟 Flags when water temperature drops to/below a threshold (comfortable
+  range for salmon migration)
+- Default sites: American River at Fair Oaks, Sacramento River at Freeport
+  (edit the `RIVERS` dict in `bot.py` to add more)
 
-## 2. Установка на Raspberry Pi
+## 1. Create the Telegram bot
+
+1. In Telegram, message **@BotFather** → `/newbot`, pick a name.
+2. Copy the token (looks like `123456789:AAAA...`) — this is `BOT_TOKEN`.
+3. Send your new bot any message (`/start`).
+4. Open in a browser:
+   `https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates`
+   and find `"chat":{"id": ...}` — this is your `CHAT_ID`.
+   (Or just run the bot once and send it `/start` — it replies with your
+   chat_id directly.)
+
+## 2. Install on Raspberry Pi
 
 ```bash
 sudo apt update && sudo apt install -y python3-venv python3-pip
 
-# скопируйте папку riverbot на Pi, например в /home/pi/riverbot
+# copy the riverbot folder onto the Pi, e.g. to /home/pi/riverbot
 cd /home/pi/riverbot
 
 python3 -m venv venv
@@ -27,56 +44,72 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env
-nano .env   # впишите BOT_TOKEN и CHAT_ID, проверьте посты и время рассылки
+nano .env   # fill in BOT_TOKEN and CHAT_ID, review sites and schedule time
 ```
 
-Проверка вручную:
+Manual test run:
 
 ```bash
 source venv/bin/activate
 python bot.py
 ```
 
-В Telegram отправьте боту `/now` — должен прийти отчёт. Остановить: `Ctrl+C`.
+In Telegram, send the bot `/now` — you should get a report back. Stop with `Ctrl+C`.
 
-## 3. Автозапуск через systemd (чтобы бот жил постоянно)
+## 3. Run continuously with systemd
 
 ```bash
-# поправьте User= и пути в файле, если пользователь на Pi не "pi"
+# edit User= and the paths in riverbot.service if your Pi user isn't "pi"
 sudo cp riverbot.service /etc/systemd/system/riverbot.service
 sudo systemctl daemon-reload
 sudo systemctl enable riverbot.service
 sudo systemctl start riverbot.service
 
-# проверить статус
+# check status
 sudo systemctl status riverbot.service
 
-# логи
+# logs
 tail -f /home/pi/riverbot/riverbot.log
 ```
 
-Бот теперь запускается автоматически при загрузке Pi и перезапускается при сбое.
+The bot now starts automatically on boot and restarts if it crashes.
 
-## Настройки (.env)
+## Configuration (`.env`)
 
-| Переменная | Описание |
+| Variable | Description |
 |---|---|
-| `BOT_TOKEN` | токен от @BotFather |
-| `CHAT_ID` | ваш chat_id |
-| `USGS_SITES` | номера постов USGS через запятую (по умолчанию Fair Oaks + Freeport) |
-| `SCHEDULE_TIME` | время ежедневной рассылки, HH:MM |
-| `TIMEZONE` | часовой пояс, например `America/Los_Angeles` |
-| `SALMON_TEMP_THRESHOLD_F` | порог температуры (°F) для пометки про лосося |
+| `BOT_TOKEN` | token from @BotFather |
+| `CHAT_ID` | your chat_id (for the daily scheduled report) |
+| `USGS_SITES` | comma-separated USGS site numbers (default: Fair Oaks + Freeport) |
+| `SCHEDULE_TIME` | daily report time, `HH:MM` |
+| `TIMEZONE` | IANA timezone, e.g. `America/Los_Angeles` |
+| `SALMON_TEMP_THRESHOLD_F` | temperature threshold (°F) for the salmon-migration note |
 
-## Другие посты USGS
+## Adding more rivers / reaches
 
-Искать номер поста: https://waterdata.usgs.gov/nwis/rt — найдите нужную реку/город,
-номер site_no впишите в `USGS_SITES` через запятую.
+Two things to edit in `bot.py`:
 
-## Обновление бота
+- `USGS_SITES` (via `.env`) — sites included in `/now` and the daily digest.
+- `RIVERS` dict — the menu structure for `/river` (river name → list of
+  `(reach label, USGS site number)`).
+
+Find site numbers at https://waterdata.usgs.gov/nwis/rt.
+
+## Updating the bot
 
 ```bash
 cd /home/pi/riverbot
-# замените файлы новой версией, затем:
+# replace the files with the new version, then:
 sudo systemctl restart riverbot.service
 ```
+
+## Security note
+
+`.env` holds your bot token — it's already in `.gitignore` and should never
+be committed. If a token ever ends up in a public repo or chat, revoke it
+immediately via @BotFather (`/mybots` → your bot → API Token → Revoke) and
+generate a new one.
+
+## The reason this bot exists
+
+![American River king salmon](docs/catch.jpg)
