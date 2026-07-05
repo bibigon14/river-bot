@@ -126,4 +126,6 @@ generate a new one.
 
 ## The reason this bot exists
 
-![American River king salmon](docs/catch.jpg)
+![Sacramento River king salmon](docs/catch.jpg)
+
+*King salmon, Sacramento River.*
