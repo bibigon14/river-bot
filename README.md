@@ -17,6 +17,9 @@ fishing the American and Sacramento Rivers, with an eye on salmon migration.
 - Daily scheduled report sent automatically at a configured time
 - 🐟 Flags when water temperature drops to/below a threshold (comfortable
   range for salmon migration)
+- `/language` — switch the bot's UI between English and Russian (per chat,
+  saved to `lang_store.json`); Telegram's own command menu also shows
+  localized command names automatically based on the user's app language
 - Default sites: American River at Fair Oaks, Sacramento River at Freeport
   (edit the `RIVERS` dict in `bot.py` to add more)
 
@@ -84,6 +87,7 @@ The bot now starts automatically on boot and restarts if it crashes.
 | `SCHEDULE_TIME` | daily report time, `HH:MM` |
 | `TIMEZONE` | IANA timezone, e.g. `America/Los_Angeles` |
 | `SALMON_TEMP_THRESHOLD_F` | temperature threshold (°F) for the salmon-migration note |
+| `DEFAULT_LANGUAGE` | `en` or `ru` — default UI language before a chat picks one with `/language` |
 
 ## Adding more rivers / reaches
 
