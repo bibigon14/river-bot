@@ -23,6 +23,16 @@ fishing the American and Sacramento Rivers, with an eye on salmon migration.
 - Default sites: American River at Fair Oaks, Sacramento River at Freeport
   (edit the `RIVERS` dict in `bot.py` to add more)
 
+## Screenshots
+
+| Current data (`/now`) | River/reach menu (`/river`) |
+|---|---|
+| ![now command](docs/screenshots/now.png) | ![river menu](docs/screenshots/river-menu.png) |
+
+| 7-day chart | Year-over-year trend |
+|---|---|
+| ![7-day chart](docs/screenshots/chart-7day.png) | ![year-over-year trend](docs/screenshots/chart-trend.png) |
+
 ## 1. Create the Telegram bot
 
 1. In Telegram, message **@BotFather** → `/newbot`, pick a name.
