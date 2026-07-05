@@ -126,6 +126,6 @@ generate a new one.
 
 ## The reason this bot exists
 
-![Me with a king salmon, Sacramento River](docs/catch.jpg)
+![Me with a King Salmon, Sacramento River](docs/catch.jpg)
 
-*Me and my catch — king salmon, Sacramento River. I built this bot so I'd know when to be here.*
+*Me and my catch — King Salmon, Sacramento River. I built this bot so I'd know when to be here.*
