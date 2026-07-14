@@ -18,6 +18,7 @@ import io
 import json
 import logging
 import os
+import time
 from datetime import date, datetime, time as dtime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -27,6 +28,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import requests
 from dotenv import load_dotenv
+from telegram.error import NetworkError
 from telegram import BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     Application,
@@ -788,7 +790,13 @@ def main() -> None:
         "RiverBot started. Sites: %s. Daily report at %s (%s). Default language: %s.",
         USGS_SITES, SCHEDULE_TIME, TIMEZONE, DEFAULT_LANGUAGE,
     )
-    app.run_polling()
+    while True:
+        try:
+            app.run_polling()
+            break
+        except NetworkError as e:
+            logger.warning("Network error, retrying in 15s: %s", e)
+            time.sleep(15)
 
 
 if __name__ == "__main__":
