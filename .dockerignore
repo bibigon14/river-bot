@@ -1,0 +1,12 @@
+.env
+.git
+.gitignore
+venv/
+__pycache__/
+*.pyc
+riverbot.log
+lang_store.json
+riverbot.service
+docs/
+README.md
+.env.example
