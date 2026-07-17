@@ -36,6 +36,7 @@ from telegram.ext import (
     CommandHandler,
     ContextTypes,
 )
+from prometheus_client import start_http_server, Gauge
 
 load_dotenv()
 
@@ -766,11 +767,40 @@ async def _post_init(app: Application) -> None:
     )
 
 
+def _proc_status_field_bytes(field: str) -> int:
+    """Read a memory field from /proc/self/status (kB) and return bytes."""
+    try:
+        with open("/proc/self/status") as f:
+            for line in f:
+                if line.startswith(field + ":"):
+                    return int(line.split()[1]) * 1024
+    except (OSError, ValueError, IndexError):
+        pass
+    return 0
+
+
+RIVERBOT_MEMORY_RSS = Gauge(
+    "riverbot_process_memory_rss_bytes",
+    "Resident set size of the RiverBot process, in bytes.",
+)
+RIVERBOT_MEMORY_RSS.set_function(lambda: _proc_status_field_bytes("VmRSS"))
+
+RIVERBOT_MEMORY_VIRTUAL = Gauge(
+    "riverbot_process_memory_virtual_bytes",
+    "Virtual memory size of the RiverBot process, in bytes.",
+)
+RIVERBOT_MEMORY_VIRTUAL.set_function(lambda: _proc_status_field_bytes("VmSize"))
+
+
 def main() -> None:
     if not BOT_TOKEN:
         raise SystemExit("BOT_TOKEN is not set. Check your .env file")
     if not CHAT_ID:
         raise SystemExit("CHAT_ID is not set. Check your .env file")
+
+    metrics_port = int(os.getenv("METRICS_PORT", "9121"))
+    start_http_server(metrics_port)
+    logger.info("Metrics server listening on :%d/metrics", metrics_port)
 
     app = Application.builder().token(BOT_TOKEN).post_init(_post_init).build()
     app.add_handler(CommandHandler("start", start_command))
