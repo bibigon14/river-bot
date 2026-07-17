@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-RiverBot — a Telegram bot that reports water level, flow, and temperature
+RiverBot - a Telegram bot that reports water level, flow, and temperature
 from USGS gauges (waterservices.usgs.gov). Supports English and Russian.
 
 Features:
-  /now       — current data for all sites in USGS_SITES (.env)
-  /river     — pick a river and reach with buttons, view charts and history
-  /language  — switch between English and Russian
-  schedule   — sends a /now-style report automatically once a day
+  /now       - current data for all sites in USGS_SITES (.env)
+  /river     - pick a river and reach with buttons, view charts and history
+  /language  - switch between English and Russian
+  schedule   - sends a /now-style report automatically once a day
 
 Configuration lives in .env (see .env.example).
 """
@@ -69,7 +69,7 @@ HISTORY_WINDOW_DAYS = 15
 
 # Registry of rivers and their reaches (gauges) for the /river command.
 # Format: "River name": [("Reach label", "USGS site number"), ...]
-# Add your own sites — look up numbers at https://waterdata.usgs.gov
+# Add your own sites - look up numbers at https://waterdata.usgs.gov
 RIVERS = {
     "American River": [
         ("Fair Oaks", "11446500"),
@@ -153,19 +153,19 @@ T = {
     "en": {
         "greeting": (
             "Hi! I track water level, flow, and temperature (USGS data).\n\n"
-            "/now — current data for all default sites\n"
-            "/river — pick a river and reach, view charts and history\n"
-            "/language — switch between English and Russian\n\n"
+            "/now - current data for all default sites\n"
+            "/river - pick a river and reach, view charts and history\n"
+            "/language - switch between English and Russian\n\n"
             "Your chat_id: {chat_id}"
         ),
         "choose_river": "Choose a river:",
-        "choose_reach": "{river} — choose a reach:",
+        "choose_reach": "{river} - choose a reach:",
         "back_rivers": "« Back to rivers",
         "btn_compare": "📊 Compare with past years",
         "btn_trend": "📉 Year-over-year trend (chart)",
         "btn_chart7": "📈 7-day chart",
         "no_fresh_data": "no fresh data",
-        "salmon_note": "🐟 Temperature ≤ {threshold:.0f}°F — comfortable for salmon migration",
+        "salmon_note": "🐟 Temperature ≤ {threshold:.0f}°F - comfortable for salmon migration",
         "updated": "Updated: {dt}",
         "err_data": "⚠️ Error fetching data for {label} ({err})",
         "err_history": "⚠️ Couldn't get historical data for {label} ({err})",
@@ -174,7 +174,7 @@ T = {
         "no_data_chart": "No data available for a chart for site {label}.",
         "no_data_trend": "No historical data available for a chart for site {label}.",
         "generic_error": "⚠️ Something went wrong handling that button. Check the bot log for details.",
-        "history_title": "📊 *{site_name}* — compared to past years ({date}):",
+        "history_title": "📊 *{site_name}* - compared to past years ({date}):",
         "history_no_data": "{date}: no data",
         "no_data_word": "no data",
         "history_error": "{date}: error fetching data ({err})",
@@ -182,17 +182,17 @@ T = {
         "history_flow": "flow {v} ft³/s",
         "history_temp": "temp {c:.1f}°C/{f:.1f}°F",
         "history_level": "level {v} ft",
-        "chart7_caption": "{site_name} — flow and temperature, last {days} days",
-        "chart7_title": "{site_name} — last {days} days",
+        "chart7_caption": "{site_name} - flow and temperature, last {days} days",
+        "chart7_title": "{site_name} - last {days} days",
         "chart7_ylabel_flow": "Flow, ft³/s",
         "chart7_ylabel_temp": "Temperature, °F",
         "chart7_legend_flow": "Flow (ft³/s)",
         "chart7_legend_temp": "Temperature (°F)",
-        "trend_title": "{label} — flow by year ({date} ± {window} d.)",
+        "trend_title": "{label} - flow by year ({date} ± {window} d.)",
         "trend_xlabel": "Days from {date}",
         "trend_ylabel": "Flow, ft³/s",
         "trend_now_suffix": " (now)",
-        "trend_caption": "{label} — flow, {date} ± {window} d., by year",
+        "trend_caption": "{label} - flow, {date} ± {window} d., by year",
         "lang_prompt": "Choose your language:",
         "lang_set": "Language set to English.",
         "cmd_start": "Greeting and help",
@@ -203,19 +203,19 @@ T = {
     "ru": {
         "greeting": (
             "Привет! Я слежу за уровнем, расходом и температурой воды (данные USGS).\n\n"
-            "/now — текущие данные по всем постам по умолчанию\n"
-            "/river — выбрать реку и участок, посмотреть график и историю\n"
-            "/language — сменить язык (английский/русский)\n\n"
+            "/now - текущие данные по всем постам по умолчанию\n"
+            "/river - выбрать реку и участок, посмотреть график и историю\n"
+            "/language - сменить язык (английский/русский)\n\n"
             "Ваш chat_id: {chat_id}"
         ),
         "choose_river": "Выберите реку:",
-        "choose_reach": "{river} — выберите участок:",
+        "choose_reach": "{river} - выберите участок:",
         "back_rivers": "« К списку рек",
         "btn_compare": "📊 Сравнить с прошлыми годами",
         "btn_trend": "📉 Тренд по годам (график)",
         "btn_chart7": "📈 График за 7 дней",
         "no_fresh_data": "нет свежих данных",
-        "salmon_note": "🐟 Температура ≤ {threshold:.0f}°F — комфортно для миграции лосося",
+        "salmon_note": "🐟 Температура ≤ {threshold:.0f}°F - комфортно для миграции лосося",
         "updated": "Обновлено: {dt}",
         "err_data": "⚠️ Ошибка получения данных для {label} ({err})",
         "err_history": "⚠️ Не удалось получить исторические данные для {label} ({err})",
@@ -223,8 +223,8 @@ T = {
         "err_trend_chart": "⚠️ Не удалось построить график по годам для {label} ({err})",
         "no_data_chart": "Нет данных для графика по посту {label}.",
         "no_data_trend": "Нет исторических данных для графика по посту {label}.",
-        "generic_error": "⚠️ Произошла ошибка при обработке кнопки. Подробности — в логе бота.",
-        "history_title": "📊 *{site_name}* — сравнение с прошлыми годами ({date}):",
+        "generic_error": "⚠️ Произошла ошибка при обработке кнопки. Подробности - в логе бота.",
+        "history_title": "📊 *{site_name}* - сравнение с прошлыми годами ({date}):",
         "history_no_data": "{date}: нет данных",
         "no_data_word": "нет данных",
         "history_error": "{date}: ошибка получения данных ({err})",
@@ -232,17 +232,17 @@ T = {
         "history_flow": "расход {v} ft³/s",
         "history_temp": "темп. {c:.1f}°C/{f:.1f}°F",
         "history_level": "уровень {v} ft",
-        "chart7_caption": "{site_name} — расход и температура, последние {days} дн.",
-        "chart7_title": "{site_name} — последние {days} дн.",
+        "chart7_caption": "{site_name} - расход и температура, последние {days} дн.",
+        "chart7_title": "{site_name} - последние {days} дн.",
         "chart7_ylabel_flow": "Расход, ft³/s",
         "chart7_ylabel_temp": "Температура, °F",
         "chart7_legend_flow": "Расход (ft³/s)",
         "chart7_legend_temp": "Температура (°F)",
-        "trend_title": "{label} — расход по годам ({date} ± {window} дн.)",
+        "trend_title": "{label} - расход по годам ({date} ± {window} дн.)",
         "trend_xlabel": "Дни от {date}",
         "trend_ylabel": "Расход, ft³/s",
         "trend_now_suffix": " (сейчас)",
-        "trend_caption": "{label} — расход, {date} ± {window} дн., по годам",
+        "trend_caption": "{label} - расход, {date} ± {window} дн., по годам",
         "lang_prompt": "Выберите язык:",
         "lang_set": "Язык переключён на русский.",
         "cmd_start": "Приветствие и справка",
@@ -359,7 +359,7 @@ def build_report(lang: str) -> str:
 
 
 # --------------------------------------------------------------------------
-# USGS: historical daily means (nwis/dv) — for comparing with past years
+# USGS: historical daily means (nwis/dv) - for comparing with past years
 # --------------------------------------------------------------------------
 
 def fetch_daily_mean(site: str, day: date) -> dict:
@@ -458,7 +458,7 @@ def fetch_daily_series(site: str, code: str, start: date, end: date) -> list[tup
 
 def build_history_chart(site: str, label: str, lang: str) -> tuple[bytes, str] | None:
     """Builds a flow chart over a +/- HISTORY_WINDOW_DAYS window around today,
-    with one line per year (current + HISTORY_YEARS_BACK) — so a trend is
+    with one line per year (current + HISTORY_YEARS_BACK) - so a trend is
     visible over roughly a month, not just a single day's value."""
     today = date.today()
     years_list = [0] + HISTORY_YEARS_BACK  # 0 = current year
