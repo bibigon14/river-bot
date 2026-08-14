@@ -793,6 +793,29 @@ RIVERBOT_MEMORY_VIRTUAL = Gauge(
 RIVERBOT_MEMORY_VIRTUAL.set_function(lambda: _proc_status_field_bytes("VmSize"))
 
 
+async def error_handler(update: object, context) -> None:
+    """Log handler/job errors so transient failures never crash the polling loop."""
+    logger.error("Exception in handler/job: %s", context.error, exc_info=context.error)
+
+
+def _build_app() -> Application:
+    app = Application.builder().token(BOT_TOKEN).post_init(_post_init).build()
+    app.add_handler(CommandHandler("start", start_command))
+    app.add_handler(CommandHandler("now", now_command))
+    app.add_handler(CommandHandler("river", river_command))
+    app.add_handler(CommandHandler("language", language_command))
+    app.add_handler(CallbackQueryHandler(button_callback))
+    app.add_error_handler(error_handler)
+
+    hh, mm = (int(x) for x in SCHEDULE_TIME.split(":"))
+    app.job_queue.run_daily(
+        scheduled_job,
+        time=dtime(hour=hh, minute=mm, tzinfo=ZoneInfo(TIMEZONE)),
+        name="daily_river_report",
+    )
+    return app
+
+
 def main() -> None:
     if not BOT_TOKEN:
         raise SystemExit("BOT_TOKEN is not set. Check your .env file")
@@ -803,31 +826,31 @@ def main() -> None:
     start_http_server(metrics_port)
     logger.info("Metrics server listening on :%d/metrics", metrics_port)
 
-    app = Application.builder().token(BOT_TOKEN).post_init(_post_init).build()
-    app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(CommandHandler("now", now_command))
-    app.add_handler(CommandHandler("river", river_command))
-    app.add_handler(CommandHandler("language", language_command))
-    app.add_handler(CallbackQueryHandler(button_callback))
-
-    hh, mm = (int(x) for x in SCHEDULE_TIME.split(":"))
-    app.job_queue.run_daily(
-        scheduled_job,
-        time=dtime(hour=hh, minute=mm, tzinfo=ZoneInfo(TIMEZONE)),
-        name="daily_river_report",
-    )
-
     logger.info(
-        "RiverBot started. Sites: %s. Daily report at %s (%s). Default language: %s.",
+        "RiverBot starting. Sites: %s. Daily report at %s (%s). Default language: %s.",
         USGS_SITES, SCHEDULE_TIME, TIMEZONE, DEFAULT_LANGUAGE,
     )
+
+    backoff = 5
     while True:
         try:
-            app.run_polling()
+            app = _build_app()
+            # bootstrap_retries=-1 keeps retrying get_updates on network errors
+            # instead of bubbling them up to us as a terminal NetworkError.
+            app.run_polling(bootstrap_retries=-1)
             break
         except NetworkError as e:
-            logger.warning("Network error, retrying in 15s: %s", e)
-            time.sleep(15)
+            logger.warning(
+                "Top-level NetworkError, rebuilding Application in %ds: %s", backoff, e
+            )
+            time.sleep(backoff)
+            backoff = min(backoff * 2, 300)
+        except Exception:
+            logger.exception(
+                "Unexpected top-level error, rebuilding Application in %ds", backoff
+            )
+            time.sleep(backoff)
+            backoff = min(backoff * 2, 300)
 
 
 if __name__ == "__main__":
